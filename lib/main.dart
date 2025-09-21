@@ -1,5 +1,6 @@
-// import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
+//import 'dart:ffi';
 
+import 'package:app_jd/Students.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo', 
+      title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -57,9 +58,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  String name = "Juan Diego";
-  int age = 20;
-  bool programming = true;
+  int age = 0;
+  String name = 'Juan Diego';
+  bool programing = true;
+
+  //final List<String> students=["Alumno1","Alumno2","Alumno3"];
+  //final Student  student= Student("EstudianteTest1","JDGH001");
+  final List<Student> Estudiantes=[];
+ TextEditingController _txtName= TextEditingController();
+ TextEditingController _txtID=TextEditingController();
+
 
   void _incrementCounter() {
     setState(() {
@@ -72,19 +80,44 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _desincrementCounter() {
-    // This call to setState tells the Flutter framework that something has
-    // changed in this State, which causes it to rerun the build method below
-    // so that the display can reflect the updated values. If we changed
-    // _counter without calling setState(), then the build method would not be
-    // called again, and so nothing would appear to happen.
-    if (_counter <= 0) {
-      Text('El contador no puede ser menor a 0');
-    } else {
-      setState(() {
+  void _DesincrementCounter() {
+    setState(() {
+      if (_counter <= 0) {
+        Text('El contador no puede ser menor a 0');
+      } else {
         _counter--;
-      });
+      }
+  
+    });
+  }
+
+  Widget _getAllStudents(){
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 12),
+        Text("Student List: "),
+        SizedBox(height: 12),
+        ...Estudiantes.map((n)=> Text("- ${n.name} , ${n.studentId} ")).toList()
+      ],
+    );
+  }
+
+  void _addStudents(){
+    final name = _txtName.text.trim();
+    final id = _txtID.text.trim();
+    Student estudiante= Student(name, id); 
+    if (estudiante.name.isEmpty || estudiante.studentId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Please write Something"))
+      );
+      return;
     }
+    setState(() {
+      Estudiantes.add(estudiante);
+    });
+    _txtName.clear();
+    _txtID.clear();
   }
 
   @override
@@ -129,29 +162,62 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+
+            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
+            child: TextField(
+              controller: _txtName,
+              decoration: InputDecoration(
+                labelText: "Name: ",
+                border: OutlineInputBorder()
+              ),
+            ),
+            ),
+
+            Padding(padding: EdgeInsets.symmetric(horizontal: 12),
+            child: TextField(
+              controller: _txtID,
+              decoration: InputDecoration(
+                labelText: "ID: ",
+                border: OutlineInputBorder()
+              ),
+            ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: ElevatedButton(onPressed: _addStudents,
+              child: Text("add Student"),
+              ),
+            ),
+
             SizedBox(height: 15),
             Text('Nombre: $name'),
             Text('Edad: $age'),
-            Text('¿Soy bueno para la chamba? $programming'),
+            Text('Soy Nuevo para la chamba: $programing'),
+            SizedBox(height: 15,),
+            //Text("Student 1: ${student.name}"),
+            //Text("Student 1: ${student.studentId}"),
+            _getAllStudents(),
           ],
         ),
       ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(height: 15),
+          SizedBox(height: 20),
           FloatingActionButton(
             onPressed: _incrementCounter,
             tooltip: 'Increment',
             child: const Icon(Icons.add),
-          ), // This trailing comma makes auto-formatting nicer for build methods.
+          ),
           FloatingActionButton(
-            onPressed: _desincrementCounter,
-            tooltip: 'Decrement',
+            onPressed: _DesincrementCounter,
+            tooltip: 'Increment',
             child: const Icon(Icons.remove),
-          ), // This trailing comma makes auto-formatting nicer for build methods.
+          ),
         ],
       ),
+      // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
